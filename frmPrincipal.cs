@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -9,6 +10,8 @@ namespace Visivel
         private Mode modo = Mode.text;
         private Desenho rabisco;
         private double lastOpacity;
+        private readonly RedisManager _redisManager;
+        private readonly WindowCounter _windowCounter;
 
         public frmVisivel()
         {
@@ -21,8 +24,21 @@ namespace Visivel
             InitEventHandles();
             if (Configuracao.autoHide)
                 Opacity = 0.2;
-            
+
             CarregarUltimoConteudo();
+
+            _redisManager = new RedisManager();
+            _windowCounter = new WindowCounter(Environment.UserName, _redisManager.GetWindowCounterDatabase(), _redisManager.GetServer());
+
+            //redis
+            _redisManager.Subscribe((message) => txtBody.Text += Environment.NewLine + message);
+
+            var processlength = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length;
+
+            if(processlength <= 1)
+                _windowCounter.ResetCounter();
+
+            _windowCounter.AddWindow();
         }
 
         #region AllEvents
@@ -52,6 +68,9 @@ namespace Visivel
             txtBody.DragDrop += txtBody_DragDrop;
             txtBody.DragEnter += txtBody_DragEnter;
             txtBody.KeyDown += all_KeyDown;
+
+
+
         }
 
         private void frmVisivel_Resize(object sender, EventArgs e)
@@ -71,6 +90,7 @@ namespace Visivel
 
         private void frmVisivel_FormClosing(object sender, FormClosingEventArgs e)
         {
+            _windowCounter.RemoveWindow();
             SalvarUltimoConteudo();
         }
 
@@ -130,6 +150,15 @@ namespace Visivel
         {
             switch (key)
             {
+                case Keys.F1:
+                    _redisManager.Publish(txtBody.Text);
+                    break;
+                case Keys.F2:
+                    PrintWindowCounter();
+                    break;
+                case Keys.F3:
+                    PrintUserOnline(); 
+                    break;
                 case Keys.F9:
                     if (Opacity > 0.4)
                     {
@@ -159,6 +188,18 @@ namespace Visivel
                     takeAPic();
                     break;
             }
+        }
+
+        private void PrintUserOnline()
+        {
+            txtBody.Text += string.Format("{0}Users:{0}{1}", 
+                Environment.NewLine, 
+                string.Join(Environment.NewLine + ",", _windowCounter.GetAllUsers()));
+        }
+
+        private void PrintWindowCounter()
+        {
+            txtBody.Text += string.Format("{0}There is {1} open windows!", Environment.NewLine, _windowCounter.GetWindowCount());
         }
 
         private void takeAPic()
