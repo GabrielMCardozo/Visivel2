@@ -1,39 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace Visivel
 {
     public partial class frmConfig : BaseForm
     {
+        private static frmConfig instance;
+
         private frmConfig()
         {
-            InitializeComponent();          
+            InitializeComponent();
         }
-
-        private static frmConfig instance;
 
         public static frmConfig GetInstance()
         {
             if (instance == null)
                 instance = new frmConfig();
             return instance;
-        } 
+        }
 
         private void chkAutoHide_CheckedChanged(object sender, EventArgs e)
         {
-            Configuracao.autoHide = chkAutoHide.Checked;             
+            Configuracao.autoHide = chkAutoHide.Checked;
         }
 
         private void chkFuga_CheckedChanged(object sender, EventArgs e)
         {
             Configuracao.fuga = chkFuga.Checked;
-        }  
+        }
 
         private void txtAimX_TextChanged(object sender, EventArgs e)
         {
@@ -52,7 +45,7 @@ namespace Visivel
             chkSalvarConteudo.Checked = Configuracao.salvarConteudo;
             chkSalvarLocalizacao.Checked = Configuracao.salvarLocal;
             chkSalvarTamanho.Checked = Configuracao.salvarTamanho;
-               
+
             chkAutoHide.Checked = Configuracao.autoHide;
             txtAimX.Text = Configuracao.screemAimX.ToString();
             txtAimY.Text = Configuracao.screemAimY.ToString();
@@ -77,6 +70,5 @@ namespace Visivel
         {
             Configuracao.salvarConteudo = chkSalvarConteudo.Checked;
         }
-
     }
 }

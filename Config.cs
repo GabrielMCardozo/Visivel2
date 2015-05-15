@@ -1,28 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Win32;
-using System.Windows.Forms;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Xml;
 using System.IO;
+using System.Text;
+using System.Windows.Forms;
+using System.Xml;
+using Microsoft.Win32;
 
 namespace Visivel
 {
     public class Config
-    {        
+    {
         #region SingleTon
 
         private static Config instance;
-        
+
         public static Config GetInstance()
         {
             if (instance == null)
                 instance = new Config();
             return instance;
-        } 
+        }
 
         #endregion
 
@@ -46,190 +43,115 @@ namespace Visivel
 
         private RegistryKey keys
         {
-            get
-            {
-                return Registry.CurrentUser.CreateSubKey("Software").CreateSubKey("Visivel");
-            }
+            get { return Registry.CurrentUser.CreateSubKey("Software").CreateSubKey("Visivel"); }
         }
 
         /// <summary>
-        /// Bool que identifica se a janela vai se esconder automaticamente
+        ///     Bool que identifica se a janela vai se esconder automaticamente
         /// </summary>
-        public bool autoHide 
-        { 
-            get
-            {                
-                return bool.Parse(keys.GetValue("autoHide",false).ToString());
-            }
-            set
-            {
-                keys.SetValue("autoHide",value);
-            }
+        public bool autoHide
+        {
+            get { return bool.Parse(keys.GetValue("autoHide", false).ToString()); }
+            set { keys.SetValue("autoHide", value); }
         }
 
         /// <summary>
-        /// Bool que identifica se a janela vai fugir do mouse
+        ///     Bool que identifica se a janela vai fugir do mouse
         /// </summary>
         public bool fuga
         {
-            get
-            {
-                return bool.Parse(keys.GetValue("fuga", false).ToString());
-            }
-            set
-            {
-                keys.SetValue("fuga", value);
-            }
+            get { return bool.Parse(keys.GetValue("fuga", false).ToString()); }
+            set { keys.SetValue("fuga", value); }
         }
-        
+
         /// <summary>
-        /// Valor utilizado para ajustar a foto a tela do visível pelo eixo x
+        ///     Valor utilizado para ajustar a foto a tela do visível pelo eixo x
         /// </summary>
         public int screemAimX
         {
-            get
-            {
-                return Int32.Parse(keys.GetValue("screenAimX", GetScreenAimValue(PointReference.X)).ToString());
-            }
-            set
-            {
-                keys.SetValue("screenAimX",value);
-            }
+            get { return Int32.Parse(keys.GetValue("screenAimX", GetScreenAimValue(PointReference.X)).ToString()); }
+            set { keys.SetValue("screenAimX", value); }
         }
 
         /// <summary>
-        /// Valor utilizado para ajustar a foto a tela do visível pelo eixo y
+        ///     Valor utilizado para ajustar a foto a tela do visível pelo eixo y
         /// </summary>
         public int screemAimY
         {
-            get
-            {
-                return Int32.Parse(keys.GetValue("screenAimY", GetScreenAimValue(PointReference.Y)).ToString());
-            }
-            set
-            {
-                keys.SetValue("screenAimY", value);
-            }
+            get { return Int32.Parse(keys.GetValue("screenAimY", GetScreenAimValue(PointReference.Y)).ToString()); }
+            set { keys.SetValue("screenAimY", value); }
         }
 
         /// <summary>
-        /// Valor que identifica a ultima posição x
+        ///     Valor que identifica a ultima posição x
         /// </summary>
         public int lastLocationX
         {
-            get
-            {
-                return int.Parse(keys.GetValue("lastLocationX", 0).ToString());
-            }
-            set
-            {
-                keys.SetValue("lastLocationX", value);
-            }
+            get { return int.Parse(keys.GetValue("lastLocationX", 0).ToString()); }
+            set { keys.SetValue("lastLocationX", value); }
         }
 
         /// <summary>
-        /// Valor que identifica a ultima posição y
+        ///     Valor que identifica a ultima posição y
         /// </summary>
         public int lastLocationY
         {
-            get
-            {
-                return int.Parse(keys.GetValue("lastLocationY", 0).ToString());
-            }
-            set
-            {
-                keys.SetValue("lastLocationY", value);
-            }
+            get { return int.Parse(keys.GetValue("lastLocationY", 0).ToString()); }
+            set { keys.SetValue("lastLocationY", value); }
         }
 
         /// <summary>
-        /// Valor que identifica a largura da janela
+        ///     Valor que identifica a largura da janela
         /// </summary>
         public int lastWidth
         {
-            get
-            {
-                return int.Parse(keys.GetValue("lastWidth", 300).ToString());
-            }
-            set
-            {
-                keys.SetValue("lastWidth", value);
-            }
+            get { return int.Parse(keys.GetValue("lastWidth", 300).ToString()); }
+            set { keys.SetValue("lastWidth", value); }
         }
 
         /// <summary>
-        /// Valor que identifica a altura da janela
+        ///     Valor que identifica a altura da janela
         /// </summary>
         public int lastHeight
         {
-            get
-            {
-                return int.Parse(keys.GetValue("lastHeight", 300).ToString());
-            }
-            set
-            {
-                keys.SetValue("lastHeight", value);
-            }
+            get { return int.Parse(keys.GetValue("lastHeight", 300).ToString()); }
+            set { keys.SetValue("lastHeight", value); }
         }
 
         /// <summary>
-        /// Bool que habilita o duplo clique, no modo foto, para voltar ao modo texto.
+        ///     Bool que habilita o duplo clique, no modo foto, para voltar ao modo texto.
         /// </summary>
         public bool BackToText
         {
-            get
-            {
-                return bool.Parse(keys.GetValue("backToText", false).ToString());
-            }
-            set
-            {
-                keys.SetValue("backToText", value);
-            }
+            get { return bool.Parse(keys.GetValue("backToText", false).ToString()); }
+            set { keys.SetValue("backToText", value); }
         }
 
         /// <summary>
-        /// Bool que define se o visível deve ou ñ salvar o seu conteudo.
+        ///     Bool que define se o visível deve ou ñ salvar o seu conteudo.
         /// </summary>
         public bool salvarConteudo
         {
-            get
-            {
-                return bool.Parse(keys.GetValue("salvarConteudo", false).ToString());
-            }
-            set
-            {
-                keys.SetValue("salvarConteudo", value);
-            }
+            get { return bool.Parse(keys.GetValue("salvarConteudo", false).ToString()); }
+            set { keys.SetValue("salvarConteudo", value); }
         }
 
         /// <summary>
-        /// Bool que define se o visível deve ou ñ salvar o seu tamanho.
+        ///     Bool que define se o visível deve ou ñ salvar o seu tamanho.
         /// </summary>
         public bool salvarTamanho
         {
-            get
-            {
-                return bool.Parse(keys.GetValue("salvarTamanho", false).ToString());
-            }
-            set
-            {
-                keys.SetValue("salvarTamanho", value);
-            }
+            get { return bool.Parse(keys.GetValue("salvarTamanho", false).ToString()); }
+            set { keys.SetValue("salvarTamanho", value); }
         }
 
         /// <summary>
-        /// Bool que define se o visível deve ou ñ salvar sua localização.
+        ///     Bool que define se o visível deve ou ñ salvar sua localização.
         /// </summary>
         public bool salvarLocal
         {
-            get
-            {
-                return bool.Parse(keys.GetValue("salvarLocal", false).ToString());
-            }
-            set
-            {
-                keys.SetValue("salvarLocal", value);
-            }
+            get { return bool.Parse(keys.GetValue("salvarLocal", false).ToString()); }
+            set { keys.SetValue("salvarLocal", value); }
         }
 
         #endregion
@@ -237,25 +159,17 @@ namespace Visivel
         #region Propriedades no Arquivo
 
         /// <summary>
-        /// Guarda o ultimo modo em que o visível se encontrava
+        ///     Guarda o ultimo modo em que o visível se encontrava
         /// </summary>
-        public Mode lastModo
-        {
-            get;
-            set;
-        }
+        public Mode lastModo { get; set; }
 
         /// <summary>
-        /// Guarda o ultimo texto no visível
+        ///     Guarda o ultimo texto no visível
         /// </summary>
-        public string lastText
-        {
-            get;
-            set;
-        }
+        public string lastText { get; set; }
 
         /// <summary>
-        /// Pega a ultima imagem salva no diretório 
+        ///     Pega a ultima imagem salva no diretório
         /// </summary>
         public Image lastImage
         {
@@ -270,14 +184,10 @@ namespace Visivel
         }
 
         /// <summary>
-        /// Localização do arquivo da ultima imagem salva no visível
+        ///     Localização do arquivo da ultima imagem salva no visível
         /// </summary>
-        private string lastImageLocation
-        {
-            get;
-            set;
-        }
-        
+        private string lastImageLocation { get; set; }
+
         #endregion
 
         #region Propriedades 
@@ -292,7 +202,7 @@ namespace Visivel
             get { return GetSaveFolder() + IMAGE_NAME; }
         }
 
-        #endregion 
+        #endregion
 
         #region Carregar/Salvar
 
@@ -300,13 +210,13 @@ namespace Visivel
         {
             if (salvarConteudo)
             {
-                FileInfo file = GetSaveFile(); if (file.Exists)
+                FileInfo file = GetSaveFile();
+                if (file.Exists)
                 {
                     FileStream fileStream = null;
                     try
                     {
-
-                        XmlDocument xml = new XmlDocument();
+                        var xml = new XmlDocument();
                         fileStream = file.OpenRead();
                         xml.Load(fileStream);
                         if (!xml.HasChildNodes)
@@ -317,7 +227,7 @@ namespace Visivel
                         }
 
                         if (!String.IsNullOrEmpty(xml.SelectSingleNode("//modo").InnerText))
-                            lastModo = (Mode)Convert.ToInt32(xml.SelectSingleNode("//modo").InnerText);
+                            lastModo = (Mode) Convert.ToInt32(xml.SelectSingleNode("//modo").InnerText);
                         else
                             lastModo = Mode.text;
 
@@ -330,8 +240,6 @@ namespace Visivel
                             lastImageLocation = xml.SelectSingleNode("//imageLocation").InnerText;
                         else
                             lastImageLocation = "";
-
-
                     }
                     catch (Exception ex)
                     {
@@ -349,7 +257,7 @@ namespace Visivel
             }
         }
 
-        public void SalvarConteudo(Mode modo,string text,Image img)
+        public void SalvarConteudo(Mode modo, string text, Image img)
         {
             if (salvarConteudo)
             {
@@ -357,8 +265,6 @@ namespace Visivel
                 FileStream fileStream = null;
                 try
                 {
-                    
-
                     XmlDocument xml = BuildXml();
 
                     modo = Mode.text;
@@ -369,8 +275,8 @@ namespace Visivel
                     //    SaveFiles.SaveImage(img, fullImageName);
                     //    xml.SelectSingleNode("//imageLocation").InnerText = fullImageName;
                     //}
-                    
-                    file.Delete();                    
+
+                    file.Delete();
                     fileStream = file.OpenWrite();
                     xml.Save(fileStream);
                 }
@@ -386,32 +292,31 @@ namespace Visivel
                 }
             }
         }
-        
+
         #endregion
 
         #region Uteis
 
         private static XmlDocument BuildXml()
         {
-            StringBuilder strXml = new StringBuilder();
-            
+            var strXml = new StringBuilder();
+
             strXml.Append("<config>");
-                strXml.Append("<modo/>");                                
-                strXml.Append("<text/>");                                
-                strXml.Append("<imageLocation/>");                               
+            strXml.Append("<modo/>");
+            strXml.Append("<text/>");
+            strXml.Append("<imageLocation/>");
             strXml.Append("</config>");
 
-            XmlDocument xdoc = new XmlDocument();
+            var xdoc = new XmlDocument();
 
             xdoc.LoadXml(strXml.ToString());
 
             return xdoc;
-            
         }
 
         private FileInfo GetSaveFile()
         {
-            FileInfo file = new FileInfo(fullFileName);
+            var file = new FileInfo(fullFileName);
             //if (!file.Exists)
             //{
             //    FileStream fileStream = file.Create();
@@ -420,7 +325,7 @@ namespace Visivel
 
             return file;
         }
-        
+
         private static string GetSaveFolder()
         {
             string dir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Visivel\\";
@@ -436,21 +341,19 @@ namespace Visivel
             int ret;
             Rectangle screen = SystemInformation.VirtualScreen;
 
-            if ((screen.Width / screen.Height) < 1.4)
+            if ((screen.Width/screen.Height) < 1.4)
                 if (p == PointReference.X)
                     ret = 5;
                 else
                     ret = 22;
+            else if (p == PointReference.X)
+                ret = 1;
             else
-                if (p == PointReference.X)
-                    ret = 1;
-                else
-                    ret = 24;
+                ret = 24;
 
-            return ret;            
+            return ret;
         }
 
         #endregion
-
     }
 }

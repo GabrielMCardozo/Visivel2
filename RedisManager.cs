@@ -1,36 +1,34 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using StackExchange.Redis;
-using System;
 
 namespace Visivel
 {
     public class RedisManager
     {
-        private readonly ConnectionMultiplexer _redisConn;
-
         private const string Channel = "visivel";
         private const string HostAndPort = "cod.redistogo.com:10725";
+        private readonly ConnectionMultiplexer _redisConn;
 
 
         public RedisManager()
         {
-            var configurationOptions = new ConfigurationOptions { Password = "be61827946a5d7a6b7333875104d4a26" };
+            var configurationOptions = new ConfigurationOptions {Password = "be61827946a5d7a6b7333875104d4a26"};
             configurationOptions.EndPoints.Add(HostAndPort);
 
             _redisConn = ConnectionMultiplexer.Connect(configurationOptions);
-
         }
 
         public void Subscribe(Action<string> action)
         {
-            var subscriber = _redisConn.GetSubscriber();
+            ISubscriber subscriber = _redisConn.GetSubscriber();
             subscriber.Subscribe(Channel, (channel, message) => action(message));
         }
 
         public void Publish(string value)
         {
-            var subscriber = _redisConn.GetSubscriber();
+            ISubscriber subscriber = _redisConn.GetSubscriber();
             subscriber.Publish(Channel, value);
         }
 
@@ -43,15 +41,14 @@ namespace Visivel
         {
             return _redisConn.GetServer(HostAndPort);
         }
-
     }
 
     public class WindowCounter
     {
-        private readonly IDatabase _windowDatabase;
+        private const string UserNameKeyPrefix = "UserName:";
         private readonly IServer _redisServer;
         private readonly string _userName;
-        private const string UserNameKeyPrefix = "UserName:";
+        private readonly IDatabase _windowDatabase;
 
         public WindowCounter(string userName, IDatabase windowDatabase, IServer redisServer)
         {
@@ -66,7 +63,7 @@ namespace Visivel
 
         public void AddWindow()
         {
-            var value = _windowDatabase.StringGet(_userName);
+            RedisValue value = _windowDatabase.StringGet(_userName);
 
             int windowCount;
             int.TryParse(value, out windowCount);
@@ -76,7 +73,7 @@ namespace Visivel
 
         public int GetWindowCount()
         {
-            var value = _windowDatabase.StringGet(_userName);
+            RedisValue value = _windowDatabase.StringGet(_userName);
 
             int windowCount;
             int.TryParse(value, out windowCount);
@@ -86,7 +83,7 @@ namespace Visivel
 
         public void RemoveWindow()
         {
-            var value = _windowDatabase.StringGet(_userName).ToString();
+            string value = _windowDatabase.StringGet(_userName).ToString();
 
             int windowCount;
             int.TryParse(value, out windowCount);
@@ -102,12 +99,11 @@ namespace Visivel
 
         public IEnumerable<string> GetAllUsers()
         {
-            var redisKeys = _redisServer.Keys(_windowDatabase.Database, UserNameKeyPrefix + "*", 100);
+            IEnumerable<RedisKey> redisKeys = _redisServer.Keys(_windowDatabase.Database, UserNameKeyPrefix + "*", 100);
 
-            var userNames = redisKeys.Select(x => x.ToString().Replace(UserNameKeyPrefix,"")).ToList();
-            
+            List<string> userNames = redisKeys.Select(x => x.ToString().Replace(UserNameKeyPrefix, "")).ToList();
+
             return userNames;
         }
     }
-
 }

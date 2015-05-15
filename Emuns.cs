@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Visivel
+﻿namespace Visivel
 {
     public enum MouseState
     {
@@ -13,7 +8,7 @@ namespace Visivel
 
     public enum Mode
     {
-        text = 0 ,
+        text = 0,
         picture = 1
     }
 

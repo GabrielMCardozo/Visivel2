@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Visivel
@@ -13,10 +9,10 @@ namespace Visivel
         #region propriedades
 
         //Private
-        private Pen caneta;
-        private PictureBox picBox;
+        private readonly Pen caneta;
 
-        private List<PointF[]> lineList;
+        private readonly List<PointF[]> lineList;
+        private readonly PictureBox picBox;
         private List<PointF> line;
         private MouseState mouse;
 
@@ -42,7 +38,7 @@ namespace Visivel
         #region Construtores/Destruidores
 
         /// <summary>
-        /// Construtor
+        ///     Construtor
         /// </summary>
         public Desenho(ref PictureBox pb)
         {
@@ -65,7 +61,7 @@ namespace Visivel
         #region Metodos
 
         /// <summary>
-        /// pega o ponto da tela onde o mouse está para desenhar na imagem
+        ///     pega o ponto da tela onde o mouse está para desenhar na imagem
         /// </summary>
         /// <param name="p">ponto onde o mouse está</param>
         /// <returns>imagem desenhada</returns>
@@ -75,8 +71,8 @@ namespace Visivel
 
             point = p;
 
-            point.X = (p.X * picBox.Image.Size.Width) / picBox.Size.Width;
-            point.Y = (p.Y * picBox.Image.Size.Height) / picBox.Size.Height;
+            point.X = (p.X*picBox.Image.Size.Width)/picBox.Size.Width;
+            point.Y = (p.Y*picBox.Image.Size.Height)/picBox.Size.Height;
 
             line.Add(point);
 
@@ -99,9 +95,9 @@ namespace Visivel
         {
             int r, g, b;
 
-            r = 255 - ((int)c.R);
-            g = 255 - ((int)c.G);
-            b = 255 - ((int)c.B);
+            r = 255 - c.R;
+            g = 255 - c.G;
+            b = 255 - c.B;
 
             return Color.FromArgb(r, g, b);
         }
@@ -113,7 +109,7 @@ namespace Visivel
         private void PicBoxMouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == DrawButton)
-                this.mouse = MouseState.down;
+                mouse = MouseState.down;
             if (e.Button == ChangeColorButton)
                 caneta.Color = InverteCor(caneta.Color);
         }
@@ -122,7 +118,7 @@ namespace Visivel
         {
             if (e.Button == DrawButton)
             {
-                this.mouse = MouseState.up;
+                mouse = MouseState.up;
                 lineList.Add(line.ToArray());
                 line = new List<PointF>();
             }
@@ -130,7 +126,7 @@ namespace Visivel
 
         private void PicBoxMouseMove(object sender, MouseEventArgs e)
         {
-            if (this.mouse == MouseState.down)
+            if (mouse == MouseState.down)
             {
                 canetar(e.Location);
             }

@@ -7,17 +7,17 @@ namespace Visivel
 {
     public partial class frmVisivel : BaseForm
     {
-        private Mode modo = Mode.text;
-        private Desenho _rabisco;
-        private double lastOpacity;
         private readonly RedisManager _redisManager;
         private readonly WindowCounter _windowCounter;
+        private Desenho _rabisco;
+        private double lastOpacity;
+        private Mode modo = Mode.text;
 
         public frmVisivel()
         {
             InitializeComponent();
             lastOpacity = Opacity;
-            toolStripComboBoxVisibilidade.SelectedIndex = Convert.ToInt32(Opacity * 10 - 4);
+            toolStripComboBoxVisibilidade.SelectedIndex = Convert.ToInt32(Opacity*10 - 4);
             _rabisco = new Desenho(ref pictureBody1)
             {
                 ChangeColorButton = MouseButtons.Middle
@@ -34,12 +34,13 @@ namespace Visivel
             if (_redisManager == null)
                 return;
 
-            _windowCounter = new WindowCounter(Environment.UserName, _redisManager.GetWindowCounterDatabase(), _redisManager.GetServer());
+            _windowCounter = new WindowCounter(Environment.UserName, _redisManager.GetWindowCounterDatabase(),
+                _redisManager.GetServer());
 
             //redis
-            _redisManager.Subscribe((message) => txtBody.Text += Environment.NewLine + message);
+            _redisManager.Subscribe(message => txtBody.Text += Environment.NewLine + message);
 
-            var processlength = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length;
+            int processlength = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length;
 
             if (processlength <= 1)
                 _windowCounter.ResetCounter();
@@ -74,9 +75,6 @@ namespace Visivel
             txtBody.DragDrop += txtBody_DragDrop;
             txtBody.DragEnter += txtBody_DragEnter;
             txtBody.KeyDown += all_KeyDown;
-
-
-
         }
 
         private void frmVisivel_Resize(object sender, EventArgs e)
@@ -91,7 +89,6 @@ namespace Visivel
                 notifyIcon1.Visible = false;
                 Show();
             }
-
         }
 
         private void frmVisivel_FormClosing(object sender, FormClosingEventArgs e)
@@ -112,12 +109,10 @@ namespace Visivel
 
         private void MouseEnterEvent(object sender, EventArgs e)
         {
-
             if (Configuracao.autoHide)
                 Opacity = lastOpacity;
-            else
-                if (Opacity < 0.4)
-                    Opacity = 0.8;
+            else if (Opacity < 0.4)
+                Opacity = 0.8;
         }
 
         private void MouseLeaveEvent(object sender, EventArgs e)
@@ -132,16 +127,13 @@ namespace Visivel
                         Opacity = 0.2;
                     }
                 }
-                else
-                    if (Opacity < 0.4)
-                        Opacity = 0.8;
+                else if (Opacity < 0.4)
+                    Opacity = 0.8;
             }
         }
 
         private void MouseMoveEvent(object sender, MouseEventArgs e)
         {
-
-
         }
 
         #endregion
@@ -149,7 +141,7 @@ namespace Visivel
         #region AllFunctions
 
         /// <summary>
-        /// Shortcuts
+        ///     Shortcuts
         /// </summary>
         /// <param name="key">shotcut key</param>
         private void keyDown(Keys key)
@@ -217,18 +209,20 @@ namespace Visivel
             if (_redisManager == null)
                 return;
 
-            txtBody.Text += string.Format("{0}There is {1} open windows!", Environment.NewLine, _windowCounter.GetWindowCount());
+            txtBody.Text += string.Format("{0}There is {1} open windows!", Environment.NewLine,
+                _windowCounter.GetWindowCount());
         }
 
         private void takeAPic()
         {
             goToImage();
-            var formLastOpacity = Opacity;
-            var x = pictureBody1.Margin.Left + Location.X;
-            var y = pictureBody1.Margin.Horizontal + Location.Y;
+            double formLastOpacity = Opacity;
+            int x = pictureBody1.Margin.Left + Location.X;
+            int y = pictureBody1.Margin.Horizontal + Location.Y;
 
             Opacity = 0;
-            pictureBody1.Image = Foto.GetScreen(pictureBody1.Size, x, y, Configuracao.screemAimX, Configuracao.screemAimY);
+            pictureBody1.Image = Foto.GetScreen(pictureBody1.Size, x, y, Configuracao.screemAimX,
+                Configuracao.screemAimY);
             Opacity = formLastOpacity;
         }
 
@@ -254,7 +248,6 @@ namespace Visivel
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
         {
-
             Show();
             WindowState = FormWindowState.Normal;
         }
@@ -276,7 +269,6 @@ namespace Visivel
                 e.Effect = DragDropEffects.Copy;
             else
                 e.Effect = DragDropEffects.None;
-
         }
 
         private void txtBody_DragDrop(object sender, DragEventArgs e)
@@ -291,9 +283,8 @@ namespace Visivel
 
             // Drop the text on to the RichTextBox.
             txtBody.Text = txtBody.Text +
-            e.Data.GetData(DataFormats.Text).ToString();
+                           e.Data.GetData(DataFormats.Text);
             txtBody.Text = txtBody.Text + s;
-
         }
 
         private void txtBody_KeyPress(object sender, KeyPressEventArgs e)
@@ -359,15 +350,13 @@ namespace Visivel
                     txtBody.Text = Clipboard.GetText();
                 else
                     txtBody.SelectedText = Clipboard.GetText();
-
-
             }
         }
 
         private void toolStripComboBoxVisibilidade_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ToolStripComboBox combo = (ToolStripComboBox)sender;
-            Opacity = (combo.SelectedIndex + 4) * 0.1;
+            var combo = (ToolStripComboBox) sender;
+            Opacity = (combo.SelectedIndex + 4)*0.1;
         }
 
         private void configuracoesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -427,13 +416,13 @@ namespace Visivel
         {
             if (Configuracao.salvarLocal)
             {
-                Configuracao.lastLocationX = this.Location.X;
-                Configuracao.lastLocationY = this.Location.Y;
+                Configuracao.lastLocationX = Location.X;
+                Configuracao.lastLocationY = Location.Y;
             }
             if (Configuracao.salvarTamanho)
             {
-                Configuracao.lastWidth = this.Width;
-                Configuracao.lastHeight = this.Height;
+                Configuracao.lastWidth = Width;
+                Configuracao.lastHeight = Height;
             }
             if (Configuracao.salvarConteudo)
                 Configuracao.SalvarConteudo(modo, txtBody.Text, pictureBody1.Image);
@@ -443,11 +432,11 @@ namespace Visivel
         {
             if (Configuracao.salvarLocal)
             {
-                this.StartPosition = FormStartPosition.Manual;
-                this.SetDesktopLocation(Configuracao.lastLocationX, Configuracao.lastLocationY);
+                StartPosition = FormStartPosition.Manual;
+                SetDesktopLocation(Configuracao.lastLocationX, Configuracao.lastLocationY);
             }
             if (Configuracao.salvarTamanho)
-                this.SetClientSizeCore(Configuracao.lastWidth, Configuracao.lastHeight);
+                SetClientSizeCore(Configuracao.lastWidth, Configuracao.lastHeight);
 
 
             if (Configuracao.salvarConteudo)
@@ -466,7 +455,6 @@ namespace Visivel
                     txtBody.SelectionStart = 0;
                     txtBody.SelectionLength = txtBody.Text.Length;
                 }
-
             }
         }
 
@@ -474,15 +462,14 @@ namespace Visivel
         {
             Opacity = lastOpacity;
 
-            var conf = frmConfig.GetInstance();
+            frmConfig conf = frmConfig.GetInstance();
 
-            conf.FormClosed += new FormClosedEventHandler(ApplyConfig);
+            conf.FormClosed += ApplyConfig;
             conf.ShowDialog(this);
         }
 
         private void ApplyConfig(object sender, EventArgs e)
         {
-
         }
 
         #endregion
@@ -492,11 +479,13 @@ namespace Visivel
         #region "Propriedades"
 
         private DateTime tempo { get; set; }
+
         private Point plim
         {
             get
             {
-                return new Point(SystemInformation.VirtualScreen.Width - this.Width - 50, SystemInformation.VirtualScreen.Height - this.Height - 50);
+                return new Point(SystemInformation.VirtualScreen.Width - Width - 50,
+                    SystemInformation.VirtualScreen.Height - Height - 50);
             }
         }
 
@@ -512,11 +501,11 @@ namespace Visivel
         private void FugaMouseLeave(object sender, EventArgs e)
         {
             TimeSpan dif = DateTime.Now - tempo;
-            if (dif.Seconds == 0 && dif.Milliseconds < 150 && !txtBody.Focused && !pictureBody1.Focused && Configuracao.fuga)
+            if (dif.Seconds == 0 && dif.Milliseconds < 150 && !txtBody.Focused && !pictureBody1.Focused &&
+                Configuracao.fuga)
             {
                 Fugir();
             }
-
         }
 
         #endregion
@@ -525,31 +514,30 @@ namespace Visivel
 
         public void Fugir()
         {
-            Random r = new Random();
+            var r = new Random();
 
             switch (r.Next(3))
             {
-                case 0://NO
+                case 0: //NO
                     MoveForm(new Point(50, 50));
                     break;
-                case 1://NE
+                case 1: //NE
                     MoveForm(new Point(plim.X, 50));
                     break;
-                case 2://SO
+                case 2: //SO
                     MoveForm(new Point(50, plim.Y));
                     break;
-                case 3://SE
+                case 3: //SE
                     MoveForm(new Point(plim.X, plim.Y));
                     break;
             }
-
         }
 
         public void MoveForm(Point pDest)
         {
-            Point pCurr = this.Location;
+            Point pCurr = Location;
 
-            while (this.Location != pDest)
+            while (Location != pDest)
             {
                 if (pCurr.X > pDest.X)
                     pCurr.X--;
@@ -561,7 +549,7 @@ namespace Visivel
                 else if (pCurr.Y < pDest.Y)
                     pCurr.Y++;
 
-                this.SetDesktopLocation(pCurr.X, pCurr.Y);
+                SetDesktopLocation(pCurr.X, pCurr.Y);
             }
             ShrinkForm();
         }
@@ -573,12 +561,11 @@ namespace Visivel
                 lastOpacity = Opacity;
                 Opacity = 0.2;
             }
-            this.SetClientSizeCore(150, 150);
+            SetClientSizeCore(150, 150);
         }
 
         #endregion
 
         #endregion
-
     }
 }
