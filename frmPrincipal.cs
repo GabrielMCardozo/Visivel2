@@ -8,7 +8,7 @@ namespace Visivel
     public partial class frmVisivel : BaseForm
     {
         private Mode modo = Mode.text;
-        private Desenho rabisco;
+        private Desenho _rabisco;
         private double lastOpacity;
         private readonly RedisManager _redisManager;
         private readonly WindowCounter _windowCounter;
@@ -18,8 +18,10 @@ namespace Visivel
             InitializeComponent();
             lastOpacity = Opacity;
             toolStripComboBoxVisibilidade.SelectedIndex = Convert.ToInt32(Opacity * 10 - 4);
-            rabisco = new Desenho(ref pictureBody1);
-            rabisco.ChangeColorButton = MouseButtons.Middle;
+            _rabisco = new Desenho(ref pictureBody1)
+            {
+                ChangeColorButton = MouseButtons.Middle
+            };
 
             InitEventHandles();
             if (Configuracao.autoHide)
@@ -28,6 +30,10 @@ namespace Visivel
             CarregarUltimoConteudo();
 
             _redisManager = new RedisManager();
+
+            if (_redisManager == null)
+                return;
+
             _windowCounter = new WindowCounter(Environment.UserName, _redisManager.GetWindowCounterDatabase(), _redisManager.GetServer());
 
             //redis
@@ -35,7 +41,7 @@ namespace Visivel
 
             var processlength = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length;
 
-            if(processlength <= 1)
+            if (processlength <= 1)
                 _windowCounter.ResetCounter();
 
             _windowCounter.AddWindow();
@@ -45,18 +51,18 @@ namespace Visivel
 
         private void InitEventHandles()
         {
-            txtBody.MouseEnter += new EventHandler(MouseEnterEvent);
-            txtBody.MouseLeave += new EventHandler(MouseLeaveEvent);
-            txtBody.MouseMove += new MouseEventHandler(MouseMoveEvent);
+            txtBody.MouseEnter += MouseEnterEvent;
+            txtBody.MouseLeave += MouseLeaveEvent;
+            txtBody.MouseMove += MouseMoveEvent;
 
 
-            pictureBody1.MouseEnter += new EventHandler(MouseEnterEvent);
-            pictureBody1.MouseLeave += new EventHandler(MouseLeaveEvent);
-            pictureBody1.MouseMove += new MouseEventHandler(MouseMoveEvent);
+            pictureBody1.MouseEnter += MouseEnterEvent;
+            pictureBody1.MouseLeave += MouseLeaveEvent;
+            pictureBody1.MouseMove += MouseMoveEvent;
 
-            this.MouseEnter += new EventHandler(MouseEnterEvent);
-            this.MouseLeave += new EventHandler(MouseLeaveEvent);
-            this.MouseMove += new MouseEventHandler(MouseMoveEvent);
+            MouseEnter += MouseEnterEvent;
+            MouseLeave += MouseLeaveEvent;
+            MouseMove += MouseMoveEvent;
 
 
             //Fuga
@@ -151,13 +157,13 @@ namespace Visivel
             switch (key)
             {
                 case Keys.F1:
-                    _redisManager.Publish(txtBody.Text);
+                    PublishText();
                     break;
                 case Keys.F2:
                     PrintWindowCounter();
                     break;
                 case Keys.F3:
-                    PrintUserOnline(); 
+                    PrintUserOnline();
                     break;
                 case Keys.F9:
                     if (Opacity > 0.4)
@@ -190,28 +196,40 @@ namespace Visivel
             }
         }
 
+        private void PublishText()
+        {
+            if (_redisManager != null)
+                _redisManager.Publish(txtBody.Text);
+        }
+
         private void PrintUserOnline()
         {
-            txtBody.Text += string.Format("{0}Users:{0}{1}", 
-                Environment.NewLine, 
+            if (_redisManager == null)
+                return;
+
+            txtBody.Text += string.Format("{0}Users:{0}{1}",
+                Environment.NewLine,
                 string.Join(Environment.NewLine + ",", _windowCounter.GetAllUsers()));
         }
 
         private void PrintWindowCounter()
         {
+            if (_redisManager == null)
+                return;
+
             txtBody.Text += string.Format("{0}There is {1} open windows!", Environment.NewLine, _windowCounter.GetWindowCount());
         }
 
         private void takeAPic()
         {
             goToImage();
-            double lastOpacity = Opacity;
-            int x = Math.Abs(pictureBody1.Margin.Left + Location.X);
-            int y = Math.Abs(pictureBody1.Margin.Horizontal + Location.Y);
+            var formLastOpacity = Opacity;
+            var x = pictureBody1.Margin.Left + Location.X;
+            var y = pictureBody1.Margin.Horizontal + Location.Y;
 
             Opacity = 0;
-            pictureBody1.Image = Foto.getScreen(pictureBody1.Size, x, y, Configuracao.screemAimX, Configuracao.screemAimY);
-            Opacity = lastOpacity;
+            pictureBody1.Image = Foto.GetScreen(pictureBody1.Size, x, y, Configuracao.screemAimX, Configuracao.screemAimY);
+            Opacity = formLastOpacity;
         }
 
         private void goToImage()
